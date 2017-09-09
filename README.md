@@ -18,7 +18,13 @@ React Component for handling some specific component outside click
 # Installation
 
 ```bash
-yarn add react-outside-click-handler
+$ npm install --save react-outside-click-handler
+```
+
+Alternatively, using yarn:
+
+```bash
+$ yarn add react-outside-click-handler
 ```
 
 # API
