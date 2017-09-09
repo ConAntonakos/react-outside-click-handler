@@ -1,51 +1,32 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { mount } from 'enzyme';
-import sinon from 'sinon';
 import OutsideClickHandler from '../lib/OutsideClickHandler';
 
 describe('<OutsideClickHandler />', () => {
-  it('calls componentDidMount', () => {
-    sinon.spy(OutsideClickHandler.prototype, 'componentDidMount');
+  it('should calls componentDidMount', () => {
+    const spy = jest.spyOn(OutsideClickHandler.prototype, 'componentDidMount');
     mount(<OutsideClickHandler />);
-    expect(OutsideClickHandler.prototype.componentDidMount.calledOnce).to.equal(true);
+    expect(spy.mock.calls.length).toBe(1);
   });
 
-  it('simulates outside click events', () => {
-    const onOutsideClick = sinon.spy();
-    const components = (
-      <div>
-        <button id="outside-button" type="button">Outside Click Button</button>
-        <OutsideClickHandler onOutsideClick={onOutsideClick}>
-          <ul>
-            <li>react</li>
-            <li>react-router</li>
-            <li>redux</li>
-            <li>immutable.js</li>
-            <li>reselect</li>
-          </ul>
-        </OutsideClickHandler>
-      </div>
+  it('should calls props.onOutsideClick when simulates outside click events', () => {
+    const onOutsideClick = jest.fn();
+    const wrapper = mount(
+      <OutsideClickHandler onOutsideClick={onOutsideClick}>
+        <button type="button" id="inside" />
+      </OutsideClickHandler>,
     );
-
-    const div = document.createElement('div');
-    div.id = 'root';
-    document.body.appendChild(div);
-
-    const root = document.getElementById('root');
-    ReactDOM.render(components, root);
-
-    document.getElementById('outside-button').click();
-    ReactDOM.unmountComponentAtNode(root);
-    document.body.innerHTML = '';
-
-    expect(onOutsideClick.calledOnce).to.equal(true);
+    const insideButton = wrapper.children().get(0);
+    wrapper.instance().handleOutsideClick({ target: insideButton });
+    expect(onOutsideClick.mock.calls.length).toBe(0);
+    wrapper.instance().handleOutsideClick({ target: {} });
+    expect(onOutsideClick.mock.calls.length).toBe(1);
   });
 
-  it('calls componentWillUnmount', () => {
-    sinon.spy(OutsideClickHandler.prototype, 'componentWillUnmount');
+  it('should calls componentWillUnmount', () => {
+    const spy = jest.spyOn(OutsideClickHandler.prototype, 'componentWillUnmount');
     const wrapper = mount(<OutsideClickHandler />);
     wrapper.unmount();
-    expect(OutsideClickHandler.prototype.componentWillUnmount.calledOnce).to.equal(true);
+    expect(spy.mock.calls.length).toBe(1);
   });
 });
